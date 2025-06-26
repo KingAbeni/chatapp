@@ -100,10 +100,10 @@ socket.on('activity', (name) => {
 
 })
 
-function buildMsg(name, msg) {
+function buildMsg(name, text) {
     return {
         name,
-        test,
+        text,
         time:new Intl.DateTimeFormat('default', {
             hour:  'numeric',
             minute: 'numeric',

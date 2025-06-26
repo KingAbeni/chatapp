@@ -73,13 +73,34 @@ socket.on('activity', (name) => {
         activity.textContent = ''
     }, 1500)
 })
+socket.on('userList', ({ users }) => {
+    showUsers(users)
+})
+socket.on('roomList', ({ rooms }) => {
+    showRooms(rooms)
+})
 
 function showUsers(users){
     usersList.textContent = ''
     if(users) {
         usersList.innerHTML = `<em>Users in ${chatRoom.value} room </em>`
         users.forEach((user,i) => {
-            usersList.textContent = `${user.name}`
-            })
+            usersList.textContent += `${user.name}`
+            if (users.length > 1 && i == users.length - 1) {
+                usersList.textContent += ` and ${user.name}`
+            }
+        })
+    }
+}
+function showRooms(rooms){
+    roomList.textContent = ''
+    if(rooms) {
+        roomList.innerHTML = '<em>Available rooms:</em>'
+        rooms.forEach((room,i) => {
+            roomList.textContent += `${room}`
+            if (rooms.length > 1 && i == rooms.length - 1) {
+                roomList.textContent += ` and ${room.name}`
+            }
+        })
     }
 }
