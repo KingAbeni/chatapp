@@ -1,5 +1,3 @@
-
-
 const socket= io('ws://localhost:3500')
 
 
@@ -16,7 +14,7 @@ function sendMessage(e) {
     if(nameInput.value && msgInput.value && chatRoom.value) {
         socket.emit('message', { 
             name: nameInput.value, 
-            test: msgInput.value 
+            text: msgInput.value // <-- fix typo here
         })
         
             msgInput.value = ""
@@ -32,7 +30,7 @@ function enterRoom(e){
             name: nameInput.value, 
             room: chatRoom.value 
         })
-    }
+}
 }
 //listener
 
@@ -92,15 +90,18 @@ function showUsers(users){
         })
     }
 }
+
 function showRooms(rooms){
     roomList.textContent = ''
     if(rooms) {
         roomList.innerHTML = '<em>Available rooms:</em>'
         rooms.forEach((room,i) => {
             roomList.textContent += `${room}`
-            if (rooms.length > 1 && i == rooms.length - 1) {
-                roomList.textContent += ` and ${room.name}`
-            }
+            // Remove incorrect room.name usage
+            // if (rooms.length > 1 && i == rooms.length - 1) {
+            //     roomList.textContent += ` and ${room.name}`
+            // }
         })
     }
 }
+

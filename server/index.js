@@ -54,7 +54,7 @@ socket.on('enterRoom', ({name, room}) => {
        })  
     }
     //join new room
-    socket.join(user)
+    socket.join(user.room)
     //to the joining user
     socket.emit('message', buildMsg(ADMIN, `You joined room ${user.room}`))
     //to everyone in the room
@@ -82,12 +82,9 @@ socket.on('enterRoom', ({name, room}) => {
 
     socket.on('message',({name, text })=> {
         const room = getUser(socket.id)?.room
-        if(!room) {
-            
+        if(room) {
             io.to(room).emit('message', buildMsg(name, text))
-
         }
-
     })
 
 //listen for activity event
