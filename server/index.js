@@ -37,24 +37,67 @@ const io=new Server(expressServer, {
 io.on('connection', socket => {
 console.log(`User ${socket.id} connected`)
 
-socket.emit('message', 'welcome to chat!')
+socket.emit('message', buildMsg(ADMIN, `Welcome to the chat app!`))
+socket.on('enterRoom', ({name, room}) => {
+    //leave previous room if any
+    const prevRoom = getUser(socket.id)?.room
+    if(prevRoom) {  
+        socket.leave(prevRoom)
+        io.to(prevRoom).emit('message', buildMsg(ADMIN, `${name} left the room`))
+    } 
+    //activate user
+    const user = activateUser(socket.id, name, room)  
 
-socket.broadcast.emit('message', `${socket.id.substring(0,5)} connected`)
+    //cannot update previous room user list until after the state in activate user
+    if(prevRoom){
+        io.to(prevRoom).emit('userList', {users : getUsersInRoom(prevRoom)
+       })  
+    }
+    //join new room
+    socket.join(user)
+    //to the joining user
+    socket.emit('message', buildMsg(ADMIN, `You joined room ${user.room}`))
+    //to everyone in the room
+    socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} joined the room`))
 
-    socket.on('message',data => {
-        console.log(`User ${socket.id.substring(0,5)} sent: ${data}`)
-        io.emit('message', `${socket.id.substring(0,5)} : ${data}`)
-    })
-
-    socket.on('disconnect', () => {
-        socket.broadcast.emit('message', `${socket.id.substring(0,5)} disconnected`)
-    })
-let activityTime
-
-socket.on('activity', (name) => {
-    // You can emit an event to all clients to notify about typing activity
-    socket.broadcast.emit('activity',name)
+    //update user list for room
+    io.to(user.room).emit('userList', {users : getUsersInRoom(user.room)})
+    //update room list for all users
+    io.emit('roomList', {rooms: getAllActiveRooms()})
 })
+//listen to disconnect event
+ socket.on('disconnect', () => {
+    const user = getUser(socket.id)
+    userleaveApp(socket.id)
+    
+    if(user) {
+        io.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} left the room`))
+        //update user list for room
+        io.to(user.room).emit('userList', {users : getUsersInRoom(user.room)})
+        //update room list for all users
+        io.emit('roomList', {rooms: getAllActiveRooms()})
+    }})
+
+//listen to message event 
+
+    socket.on('message',({name, text })=> {
+        const room = getUser(socket.id)?.room
+        if(!room) {
+            
+            io.to(room).emit('message', buildMsg(name, text))
+
+        }
+
+    })
+
+//listen for activity event
+socket.on('activity', (name) => {
+    const room = getUser(socket.id)?.room
+    if(room) {
+        socket.broadcast.to(room).emit('activity', name)
+    }
+})
+
 })
 
 function buildMsg(name, msg) {
@@ -67,4 +110,27 @@ function buildMsg(name, msg) {
             second: 'numeric'
         }).format(new Date())
     }
+}
+//user active function function
+function activateUser(id,name,room){
+    const user = {id,name,room}
+    UserState.setUsers([
+        ...UserState.users.filter(user => user.id !== id), user])
+    return user
+}
+// user  leave
+function userleaveApp(id) {
+    UserState.setUsers(UserState.users.filter(user => user.id !== id))
+}
+// get user by id
+function getUser(id) {
+    return UserState.users.find(user => user.id === id)
+}
+// get users by room
+function getUsersInRoom(room) {
+    return UserState.users.filter(user => user.room === room)
+}
+// get all rooms
+function getAllActiveRooms() {
+    return [...new Set(UserState.users.map(user => user.room))]
 }
