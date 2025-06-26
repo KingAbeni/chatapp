@@ -1,6 +1,6 @@
 
 
-const socket= io('ws://localhost:3000');
+const socket= io('ws://localhost:3500');
 
 function sendMessage(e) {
     e.preventDefault()
