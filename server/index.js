@@ -4,9 +4,11 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
-const __dirname= path.dirname(__filename)   
+const __dirname= path.dirname(__filename)
+
 
 const PORT = process.env.PORT || 3500
+const ADMIN="Admin"
 
 const app = express()
 
@@ -15,6 +17,16 @@ app.use(express.static(path.join(__dirname, "public")))
 const expressServer = app.listen(PORT, () => {
     console.log(`listening on port ${PORT}`)
 } )
+
+// state 
+
+const UserState = {
+    users: [],
+    setUsers : function(newUsersArray) {
+        this.users = newUsersArray
+    }
+}
+
 
 const io=new Server(expressServer, {
     cors:{
@@ -44,3 +56,15 @@ socket.on('activity', (name) => {
     socket.broadcast.emit('activity',name)
 })
 })
+
+function buildMsg(name, msg) {
+    return {
+        name,
+        test,
+        time:new Intl.DateTimeFormat('default', {
+            hour:  'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        }).format(new Date())
+    }
+}
