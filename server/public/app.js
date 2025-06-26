@@ -1,13 +1,16 @@
 
 
-const socket= io('ws://localhost:3500');
+const socket= io('ws://localhost:3500')
+
+const activity = document.querySelector('.activity')
+const msginput = document.querySelector('input')
 
 function sendMessage(e) {
     e.preventDefault()
-    const input =document.querySelector('input')
-    if(input.value) {
-        socket.emit('message', input.value)
-        input.value = ""
+
+    if(msginput.value) {
+        socket.emit('message', msginput.value)
+        msginput.value = ""
     }
     input.focus()
 }
@@ -20,4 +23,13 @@ socket.on("message", (data) => {
     li.textContent = data
     document.querySelector('ul').appendChild(li)
 
-}) 
+})
+msginput.addEventListener('keypress', () => {
+    socket.emit('activity', socket.id.substring(0,5))
+})
+socket.on('activity', (name) => {
+    activity.textContent = `${name} is typing...`
+    setTimeout(() => {
+        activity.textContent = ''
+    }, 1000)
+})
