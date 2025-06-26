@@ -44,9 +44,25 @@ msgInput.addEventListener('keypress', () => {
 
 // Listen for messages from the server
 socket.on("message", (data) => {
+    activity.textContent = ''
+    const {name, text, time} = data
     const li = document.createElement('li')
-    li.textContent = data
-    document.querySelector('ul').appendChild(li)
+    li.className = 'post'
+    if(name === nameInput.value ) li.className ='post post--left'
+    if(name !==nameInput.value && name !== 'Admin') li.className ='post post--right'
+    if(name!== 'admin'){
+        li.innerHTML = `<div class="post__header ${name === nameInput.value ? 'post__header--user' : 'post__header--reply'}">
+        <span class="POST__header__name">${name}</span>
+        <span class="POST__header__time">${time}</span>
+        </div>
+        <div class="post__text">${text}</div>`
+    }
+    else {
+        li.innerHTML = `<div class="post__text">${text}</div>`
+    }
+
+    document.querySelector('.chat.display').appendChild(li)
+    chatDisplay.scrollTop = chatDisplay.scrollHeight
 
 })
 
@@ -57,3 +73,13 @@ socket.on('activity', (name) => {
         activity.textContent = ''
     }, 1500)
 })
+
+function showUsers(users){
+    usersList.textContent = ''
+    if(users) {
+        usersList.innerHTML = `<em>Users in ${chatRoom.value} room </em>`
+        users.forEach((user,i) => {
+            usersList.textContent = `${user.name}`
+            })
+    }
+}
