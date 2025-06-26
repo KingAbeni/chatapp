@@ -85,7 +85,7 @@ function showUsers(users){
         users.forEach((user,i) => {
             usersList.textContent += `${user.name}`
             if (users.length > 1 && i == users.length - 1) {
-                usersList.textContent += ` and ${user.name}`
+                usersList.textContent += `${user.name}`
             }
         })
     }
@@ -97,10 +97,9 @@ function showRooms(rooms){
         roomList.innerHTML = '<em>Available rooms:</em>'
         rooms.forEach((room,i) => {
             roomList.textContent += `${room}`
-            // Remove incorrect room.name usage
-            // if (rooms.length > 1 && i == rooms.length - 1) {
-            //     roomList.textContent += ` and ${room.name}`
-            // }
+            if (rooms.length > 1 && i == rooms.length - 1) {
+                roomList.textContent += `${room.name}`
+            }
         })
     }
 }
