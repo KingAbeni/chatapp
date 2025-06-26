@@ -27,9 +27,10 @@ socket.on("message", (data) => {
 msginput.addEventListener('keypress', () => {
     socket.emit('activity', socket.id.substring(0,5))
 })
+
 socket.on('activity', (name) => {
     activity.textContent = `${name} is typing...`
     setTimeout(() => {
         activity.textContent = ''
-    }, 1000)
+    }, 1500)
 })

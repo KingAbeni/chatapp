@@ -25,7 +25,7 @@ const io=new Server(expressServer, {
 io.on('connection', socket => {
 console.log(`User ${socket.id} connected`)
 
-socket.emit('message', "welcome to chat!")
+socket.emit('message', 'welcome to chat!')
 
 socket.broadcast.emit('message', `${socket.id.substring(0,5)} connected`)
 
@@ -37,8 +37,10 @@ socket.broadcast.emit('message', `${socket.id.substring(0,5)} connected`)
     socket.on('disconnect', () => {
         socket.broadcast.emit('message', `${socket.id.substring(0,5)} disconnected`)
     })
+let activityTime
 
-    socket.on('activity', (name) => {
-        socket.broadcast.emit('activity', name)
-    })
+socket.on('activity', (name) => {
+    // You can emit an event to all clients to notify about typing activity
+    socket.broadcast.emit('activity',name)
+})
 })
