@@ -1,3 +1,4 @@
+import { Console } from 'console'
 import { createServer } from 'http'
 import { Server} from 'socket.io'
 
@@ -10,13 +11,12 @@ const io=new Server(httpServer, {
 })
 
 io.on('connection', socket => {
-    socket.on('message',message => {
-        console.log(`User ${socket.id} connected`)
+console.log(`User ${socket.id} connected`)
 
-        const b=Buffer.from(message)
-        console.log(b.toString)
-        socket.send(`${message}`)
+    socket.on('message',data => {
+        console.log(data)
+        io.emit('message', `${socket.id.substring(0,5)} : ${data}`)
     })
 })
 
-httpServer.listen(3000)
+httpServer.listen(3500, ()=> console.log('listening on port 3500'))
