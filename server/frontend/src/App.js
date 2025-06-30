@@ -1,7 +1,13 @@
-import ChatApp from './ChatApp';
+import React from 'react';
+import ChatApp from './components/ChatApp';
+import './simple_css.css';
 
 function App() {
-  return <ChatApp />;
+  return (
+    <div className="App">
+      <ChatApp />
+    </div>
+  );
 }
 
 export default App;
